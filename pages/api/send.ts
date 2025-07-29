@@ -12,18 +12,22 @@ export default async function handler(
   try {
     const { name, phone, vehicle, date, message } = req.body;
 
-    const response = await axios.post("https://api.solapi.com/messages/v4/send", {
-      message: {
-        to: phone,
-        from: process.env.SENDER_PHONE, // 예: "01012345678"
-        text: `[예약확인] ${name}님의 ${vehicle} 차량\n예약일: ${date}\n요청사항: ${message}`,
+    const response = await axios.post(
+      "https://api.solapi.com/messages/v4/send",
+      {
+        message: {
+          to: phone,
+          from: process.env.SENDER_PHONE,
+          text: `[예약확인]\n이름: ${name}\n차량: ${vehicle}\n예약일: ${date}\n요청: ${message}`,
+        },
       },
-    }, {
-      headers: {
-        Authorization: `Bearer ${process.env.SOLAPI_API_KEY}`, // 환경변수 또는 직접 키 입력
-        "Content-Type": "application/json",
-      },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.SOLAPI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return res.status(200).json({ success: true, response: response.data });
   } catch (error: any) {
