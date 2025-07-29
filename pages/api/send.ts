@@ -10,18 +10,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: '수신번호와 메시지를 입력해주세요.' });
   }
 
-  const apiKey = process.env.SOLAPI_API_KEY as string;
-  const apiSecret = process.env.SOLAPI_API_SECRET as string;
-  const sender = process.env.SOLAPI_SENDER as string;
+  // 환경변수 체크 + 타입 단언
+  const apiKey = process.env.SOLAPI_API_KEY;
+  const apiSecret = process.env.SOLAPI_API_SECRET;
+  const sender = process.env.SOLAPI_SENDER;
 
   if (!apiKey || !apiSecret || !sender) {
-    return res.status(500).json({ error: '환경변수 누락' });
+    return res.status(500).json({ success: false, error: '환경변수가 누락되었습니다.' });
   }
 
   const date = new Date().toISOString();
   const salt = crypto.randomBytes(32).toString('hex');
   const signature = crypto
-    .createHmac('sha256', apiSecret)
+    .createHmac('sha256', apiSecret) // 여기서 타입 오류 방지
     .update(date + salt)
     .digest('hex');
 
