@@ -7,20 +7,29 @@ export default async function handler(req, res) {
 
   const { name, phone, carModel, vin, requestText } = req.body;
 
+  // 누락 체크 로그
+  console.log("받은 req.body 데이터:", { name, phone, carModel, vin, requestText });
+
+  if (!name || !phone || !carModel || !vin || !requestText) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
+  }
+
   try {
     const response = await axios({
       method: "POST",
       url: "https://api.solapi.com/messages/v4/send",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${Buffer.from(
-          `${process.env.SOLAPI_API_KEY}:${process.env.SOLAPI_API_SECRET}`
-        ).toString("base64")}`,
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            `${process.env.SOLAPI_API_KEY}:${process.env.SOLAPI_API_SECRET}`
+          ).toString("base64"),
       },
       data: {
         message: {
-          to: phone,                     // 수신번호 (01012345678 형식)
-          from: process.env.SOLAPI_SENDER, // 발신번호 (01051830000 형식)
+          to: phone,
+          from: process.env.SOLAPI_SENDER,
           text: `[예약] ${name}님의 차량(${carModel}/${vin}) 요청사항: ${requestText}`,
         },
       },
