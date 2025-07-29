@@ -9,7 +9,7 @@ const sender = process.env.SOLAPI_SENDER;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (!apiKey || !apiSecret || !sender) {
-      throw new Error('Missing SOLAPI API credentials or sender');
+      throw new Error('Missing SOLAPI credentials');
     }
 
     const date = Date.now().toString();
