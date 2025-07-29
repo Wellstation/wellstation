@@ -1,46 +1,33 @@
 import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  const { name, phone, carModel, vin, requestText } = req.body;
-
-  if (!name || !phone || !carModel || !vin || !requestText) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing required fields",
-    });
-  }
-
   try {
-    const authKey = Buffer.from(
-      `${process.env.SOLAPI_API_KEY}:${process.env.SOLAPI_API_SECRET}`
-    ).toString("base64");
+    const { name, phone, vehicle, date, message } = req.body;
 
     const response = await axios.post("https://api.solapi.com/messages/v4/send", {
-      messages: [
-        {
-          to: phone,
-          from: process.env.SOLAPI_SENDER,
-          text: `[예약] ${name}님의 차량(${carModel}/${vin}) 요청사항: ${requestText}`,
-        },
-      ],
+      message: {
+        to: phone,
+        from: process.env.SENDER_PHONE, // 예: "01012345678"
+        text: `[예약확인] ${name}님의 ${vehicle} 차량\n예약일: ${date}\n요청사항: ${message}`,
+      },
     }, {
       headers: {
-        Authorization: `Basic ${authKey}`,
+        Authorization: `Bearer ${process.env.SOLAPI_API_KEY}`, // 환경변수 또는 직접 키 입력
         "Content-Type": "application/json",
       },
     });
 
-    return res.status(200).json({ success: true, result: response.data });
+    return res.status(200).json({ success: true, response: response.data });
   } catch (error: any) {
-    console.error("SMS send error:", error.response?.data || error.message);
-    return res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message,
-    });
+    console.error("SMS 전송 실패:", error.response?.data || error.message);
+    return res.status(500).json({ error: "문자 전송 중 오류 발생" });
   }
 }
