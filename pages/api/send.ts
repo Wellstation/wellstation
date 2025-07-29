@@ -1,45 +1,34 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
-import crypto from 'crypto';
+import axios from "axios";
 
-const apiKey = process.env.SOLAPI_API_KEY;
-const apiSecret = process.env.SOLAPI_API_SECRET;
-const sender = process.env.SOLAPI_SENDER;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).end();
+  }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (!apiKey || !apiSecret || !sender) {
-      throw new Error('Missing SOLAPI credentials');
-    }
-
-    const date = Date.now().toString();
-    const salt = crypto.randomBytes(32).toString('hex');
-    const signature = crypto
-      .createHmac('sha256', apiSecret)
-      .update(date + salt)
-      .digest('hex');
-
-    const result = await axios({
-      method: 'POST',
-      url: 'https://api.solapi.com/messages/v4/send',
-      headers: {
-        Authorization: `HMAC-SHA256 apiKey=${apiKey}, date=${date}, salt=${salt}, signature=${signature}`,
-        'Content-Type': 'application/json',
-      },
-      data: {
+    const response = await axios.post(
+      "https://api.solapi.com/messages/v4/send",
+      {
         messages: [
           {
             to: req.body.to,
-            from: sender,
+            from: process.env.SOLAPI_SENDER,
             text: req.body.text,
           },
         ],
       },
-    });
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.SOLAPI_API_KEY}:${process.env.SOLAPI_API_SECRET}`
+          ).toString("base64")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    res.status(200).json(result.data);
+    res.status(200).json({ success: true, data: response.data });
   } catch (error) {
-    console.error('SMS send error:', error);
-    res.status(500).json({ error: 'SMS send failed' });
+    res.status(500).json({ success: false, message: error?.response?.data || error.message });
   }
 }
