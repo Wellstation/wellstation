@@ -27,6 +27,7 @@ export default async function handler(req, res) {
             to: phone,
             from: process.env.SOLAPI_SENDER,
             text: `[예약] ${name}님의 차량(${carModel}/${vin}) 요청사항: ${requestText}`,
+            type: "SMS"
           },
         ],
       },
@@ -38,7 +39,7 @@ export default async function handler(req, res) {
       }
     );
 
-    return res.status(200).json({ success: true, result: response.data });
+    return res.status(200).json({ success: true, data: response.data });
   } catch (error) {
     console.error("SMS send error:", error.response?.data || error.message);
     return res.status(500).json({
