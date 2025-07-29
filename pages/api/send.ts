@@ -4,11 +4,12 @@ import crypto from 'crypto';
 
 const apiKey = process.env.SOLAPI_API_KEY;
 const apiSecret = process.env.SOLAPI_API_SECRET;
+const sender = process.env.SOLAPI_SENDER;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (!apiKey || !apiSecret) {
-      throw new Error('Missing SOLAPI API credentials');
+    if (!apiKey || !apiSecret || !sender) {
+      throw new Error('Missing SOLAPI API credentials or sender');
     }
 
     const date = Date.now().toString();
@@ -18,12 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .update(date + salt)
       .digest('hex');
 
-    const { to, from, text } = req.body;
-
-    if (!to || !from || !text) {
-      return res.status(400).json({ error: '필수값 누락됨' });
-    }
-
     const result = await axios({
       method: 'POST',
       url: 'https://api.solapi.com/messages/v4/send',
@@ -32,17 +27,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'Content-Type': 'application/json',
       },
       data: {
-        message: {
-          to,
-          from,
-          text,
-        },
+        messages: [
+          {
+            to: req.body.to,
+            from: sender,
+            text: req.body.text,
+          },
+        ],
       },
     });
 
     res.status(200).json(result.data);
-  } catch (error: any) {
-    console.error('SMS send error:', error.response?.data || error.message);
+  } catch (error) {
+    console.error('SMS send error:', error);
     res.status(500).json({ error: 'SMS send failed' });
   }
 }
