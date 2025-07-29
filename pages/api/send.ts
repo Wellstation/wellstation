@@ -10,9 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: '수신번호와 메시지를 입력해주세요.' });
   }
 
-  const apiKey = process.env.SOLAPI_API_KEY;
-  const apiSecret = process.env.SOLAPI_API_SECRET;
-  const sender = process.env.SOLAPI_SENDER;
+  const apiKey = process.env.SOLAPI_API_KEY as string;
+  const apiSecret = process.env.SOLAPI_API_SECRET as string;
+  const sender = process.env.SOLAPI_SENDER as string;
 
   if (!apiKey || !apiSecret || !sender) {
     return res.status(500).json({ error: '환경변수 누락' });
