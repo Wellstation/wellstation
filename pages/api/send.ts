@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         messages: [
           {
             to: req.body.to,
-            from: process.env.SOLAPI_SENDER,
+            from: process.env.SOLAPI_SENDER, // 🔥 고정값으로 변경
             text: req.body.text,
           },
         ],
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ success: true, data: response.data });
   } catch (error) {
+    console.error("SMS 전송 실패:", error?.response?.data || error.message);
     res.status(500).json({ success: false, message: error?.response?.data || error.message });
   }
 }
