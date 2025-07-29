@@ -3,12 +3,9 @@ import axios from 'axios';
 import crypto from 'crypto';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).end('Method Not Allowed');
-  }
+  if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
 
   const { to, text } = req.body;
-
   if (!to || !text) {
     return res.status(400).json({ error: '수신번호와 메시지를 입력해주세요.' });
   }
@@ -18,12 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const sender = process.env.SOLAPI_SENDER;
 
   if (!apiKey || !apiSecret || !sender) {
-    return res.status(500).json({ error: '환경변수가 누락되었습니다. (API_KEY / API_SECRET / SENDER)' });
+    return res.status(500).json({ error: '환경변수 누락' });
   }
 
   const date = new Date().toISOString();
   const salt = crypto.randomBytes(32).toString('hex');
-
   const signature = crypto
     .createHmac('sha256', apiSecret)
     .update(date + salt)
