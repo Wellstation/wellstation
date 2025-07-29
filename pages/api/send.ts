@@ -14,9 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const date = Date.now().toString();
     const salt = crypto.randomBytes(32).toString('hex');
     const signature = crypto
-      .createHmac('sha256', apiSecret!)  // <-- Non-null 단언
+      .createHmac('sha256', apiSecret)
       .update(date + salt)
       .digest('hex');
+
+    const { to, from, text } = req.body;
+
+    if (!to || !from || !text) {
+      return res.status(400).json({ error: '필수값 누락됨' });
+    }
 
     const result = await axios({
       method: 'POST',
@@ -26,19 +32,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'Content-Type': 'application/json',
       },
       data: {
-        messages: [  // <-- 여기를 배열로 변경
-          {
-            to: req.body.to,
-            from: req.body.from,
-            text: req.body.text,
-          },
-        ],
+        message: {
+          to,
+          from,
+          text,
+        },
       },
     });
 
     res.status(200).json(result.data);
-  } catch (error) {
-    console.error('SMS send error:', error);
+  } catch (error: any) {
+    console.error('SMS send error:', error.response?.data || error.message);
     res.status(500).json({ error: 'SMS send failed' });
   }
 }
