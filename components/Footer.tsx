@@ -1,4 +1,3 @@
-// components/Footer.tsx
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white text-sm px-4 py-6 mt-10 w-full">
@@ -8,20 +7,17 @@ export default function Footer() {
         <p>사업자등록번호 : 859-37-01635</p>
         <p>호스팅서비스사업자 : Vercel Inc.</p>
         <p>
-          이메일 :
+          이메일 :{" "}
           <a
             href="mailto:apsauto@naver.com"
-            className="ml-1 underline text-blue-300 break-all"
+            className="underline text-blue-300 break-all"
           >
             apsauto@naver.com
           </a>
         </p>
         <p>
-          고객센터 :
-          <a
-            href="tel:16684509"
-            className="ml-1 font-semibold text-blue-400"
-          >
+          고객센터 :{" "}
+          <a href="tel:16684509" className="font-semibold text-blue-400">
             1668-4509
           </a>
         </p>
