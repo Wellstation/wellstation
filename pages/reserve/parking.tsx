@@ -6,17 +6,24 @@ export default function ParkingReservationForm() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [vehicleInfo, setVehicleInfo] = useState("");
+  const [date, setDate] = useState("");
   const [etc, setEtc] = useState("");
   const [result, setResult] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `[주차예약]\n이름: ${name}\n연락처: ${phone}\n차량정보: ${vehicleInfo}\n기타: ${etc}`;
+
+    const text = `[주차예약]
+이름: ${name}
+연락처: ${phone}
+입고 차량 정보: ${vehicleInfo}
+예약일시: ${date}
+기타 요청사항: ${etc}`;
 
     const res = await fetch("/api/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: phone, text })
+      body: JSON.stringify({ to: phone, text }),
     });
 
     const data = await res.json();
@@ -37,7 +44,8 @@ export default function ParkingReservationForm() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} required className="border p-2 rounded" />
           <input placeholder="연락처" value={phone} onChange={(e) => setPhone(e.target.value)} required className="border p-2 rounded" />
-          <textarea placeholder="입고 차량 정보" value={vehicleInfo} onChange={(e) => setVehicleInfo(e.target.value)} className="border p-2 rounded" required />
+          <textarea placeholder="입고 차량 정보" value={vehicleInfo} onChange={(e) => setVehicleInfo(e.target.value)} required className="border p-2 rounded" />
+          <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} required className="border p-2 rounded" />
           <textarea placeholder="기타 요청사항" value={etc} onChange={(e) => setEtc(e.target.value)} className="border p-2 rounded" />
           <button type="submit" className="bg-black text-white p-2 rounded hover:bg-gray-800">예약 및 문자 전송</button>
         </form>
