@@ -9,6 +9,7 @@ export default function TuningReservationForm() {
   const [vehicleModel, setVehicleModel] = useState("");
   const [vehicleYear, setVehicleYear] = useState("");
   const [vin, setVin] = useState("");
+  const [date, setDate] = useState("");
   const [request, setRequest] = useState("");
   const [etc, setEtc] = useState("");
   const [result, setResult] = useState("");
@@ -16,7 +17,15 @@ export default function TuningReservationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `[튜닝예약]\n이름: ${name}\n연락처: ${phone}\n차량모델: ${vehicleModel}\n연식: ${vehicleYear}\n차대번호: ${vin}\n요청사항: ${request}\n기타: ${etc}`;
+    const text = `[튜닝예약]
+이름: ${name}
+연락처: ${phone}
+차량모델: ${vehicleModel}
+연식: ${vehicleYear}
+차대번호: ${vin}
+예약일시: ${date}
+요청사항: ${request}
+기타: ${etc}`;
 
     const res = await fetch("/api/send", {
       method: "POST",
@@ -45,6 +54,7 @@ export default function TuningReservationForm() {
           <input placeholder="차량 모델명" value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} required className="border p-2 rounded" />
           <input placeholder="연식" value={vehicleYear} onChange={(e) => setVehicleYear(e.target.value)} required className="border p-2 rounded" />
           <input placeholder="차대번호 (VIN)" value={vin} onChange={(e) => setVin(e.target.value)} required className="border p-2 rounded" />
+          <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} required className="border p-2 rounded" />
           <textarea placeholder="튜닝 요청사항" value={request} onChange={(e) => setRequest(e.target.value)} className="border p-2 rounded" />
           <textarea placeholder="기타 요청사항" value={etc} onChange={(e) => setEtc(e.target.value)} className="border p-2 rounded" />
           <button type="submit" className="bg-black text-white p-2 rounded hover:bg-gray-800">예약 및 문자 전송</button>
