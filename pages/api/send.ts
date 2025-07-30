@@ -12,28 +12,21 @@ export default async function handler(
   try {
     const { to, text } = req.body;
 
-    // SOLAPI 문자 전송 예시
-    const response = await axios.post(
-      "https://api.solapi.com/messages/v4/send",
-      {
-        message: {
-          to,
-          from: process.env.SMS_FROM,
-          text,
-        },
+    const response = await axios.post("https://api.solapi.com/messages/v4/send", {
+      message: {
+        to,
+        from: process.env.SMS_FROM,
+        text,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.SOLAPI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    }, {
+      headers: {
+        Authorization: `Bearer ${process.env.SOLAPI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     return res.status(200).json({ message: "Success", data: response.data });
   } catch (error: any) {
-    return res
-      .status(500)
-      .json({ message: "Failed", error: error.message || "Unknown error" });
+    return res.status(500).json({ message: "Failed", error: error.message });
   }
 }
