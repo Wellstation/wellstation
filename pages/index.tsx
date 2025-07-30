@@ -9,7 +9,7 @@ export default function Home() {
       style={{ backgroundImage: "url('/bg-placeholder.jpg')" }} // 임시 배경 이미지
     >
       <header className="mt-10 mb-12 flex justify-center">
-        <Image src="/logo.svg" alt="로고" width={180} height={80} />
+        <Image src="/logo.svg" alt="로고" width={210} height={93} />
       </header>
 
       <main className="flex flex-col items-center gap-6">
