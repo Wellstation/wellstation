@@ -1,5 +1,5 @@
-import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
+import axios from "axios";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,19 +10,16 @@ export default async function handler(
   }
 
   try {
-    const { name, phone, vehicle, date, message } = req.body;
+    const { to, text } = req.body;
 
-    if (!process.env.SOLAPI_API_KEY || !process.env.SENDER_PHONE) {
-      return res.status(500).json({ error: "환경 변수가 누락되었습니다." });
-    }
-
+    // SOLAPI 문자 전송 예시
     const response = await axios.post(
       "https://api.solapi.com/messages/v4/send",
       {
         message: {
-          to: phone,
-          from: process.env.SENDER_PHONE,
-          text: `[예약확인]\n이름: ${name}\n차량: ${vehicle}\n예약일: ${date}\n요청: ${message}`,
+          to,
+          from: process.env.SMS_FROM,
+          text,
         },
       },
       {
@@ -33,9 +30,10 @@ export default async function handler(
       }
     );
 
-    return res.status(200).json({ success: true, data: response.data });
+    return res.status(200).json({ message: "Success", data: response.data });
   } catch (error: any) {
-    console.error("문자 전송 실패:", error?.response?.data || error.message);
-    return res.status(500).json({ error: "문자 전송 실패" });
+    return res
+      .status(500)
+      .json({ message: "Failed", error: error.message || "Unknown error" });
   }
 }
