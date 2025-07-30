@@ -1,10 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
+import crypto from 'crypto';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
@@ -15,20 +13,28 @@ export default async function handler(
     return res.status(400).json({ message: 'Missing required fields: to, text' });
   }
 
+  const apiKey = process.env.SOLAPI_API_KEY!;
+  const apiSecret = process.env.SOLAPI_API_SECRET!;
+  const sender = process.env.SOLAPI_SENDER!;
+
+  const date = Date.now().toString();
+  const salt = crypto.randomBytes(16).toString('hex');
+  const signature = crypto
+    .createHmac('sha256', apiSecret)
+    .update(date + salt)
+    .digest('hex');
+
   try {
-    const response = await axios({
-      method: 'POST',
-      url: 'https://api.solapi.com/messages/v4/send',
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${process.env.SOLAPI_API_KEY}:${process.env.SOLAPI_API_SECRET}`).toString('base64')}`,
-        'Content-Type': 'application/json',
+    const response = await axios.post('https://api.solapi.com/messages/v4/send', {
+      message: {
+        to,
+        from: sender,
+        text,
       },
-      data: {
-        message: {
-          to,
-          from: process.env.SOLAPI_SENDER || '', // 보내는 번호
-          text,
-        },
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `HMAC-SHA256 apiKey=${apiKey}, date=${date}, salt=${salt}, signature=${signature}`,
       },
     });
 
