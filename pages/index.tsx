@@ -5,9 +5,9 @@ import Footer from '../components/Footer';
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black px-4 py-10">
-      
+
       {/* 로고 */}
-      <header className="mb-12">
+      <header className="mb-20">
         <Image src="/logo1.svg" alt="로고" width={250} height={110} />
       </header>
 
@@ -17,7 +17,7 @@ export default function Home() {
         {/* 정비 예약 */}
         <Link href="/reserve/repair">
           <button
-            className="w-full px-8 py-4 text-xl font-semibold text-white rounded-2xl shadow-xl border
+            className="w-full px-8 py-5 text-2xl font-semibold text-white rounded-2xl shadow-xl border
                        bg-[#2C3E50] dark:bg-[#34495E] dark:border-gray-600
                        transition-all duration-300 ease-in-out hover:scale-105"
           >
@@ -28,7 +28,7 @@ export default function Home() {
         {/* 튜닝 예약 */}
         <Link href="/reserve/tuning">
           <button
-            className="w-full px-8 py-4 text-xl font-semibold text-white rounded-2xl shadow-xl border
+            className="w-full px-8 py-5 text-2xl font-semibold text-white rounded-2xl shadow-xl border
                        bg-[#8E44AD] dark:bg-[#A569BD] dark:border-purple-300
                        transition-all duration-300 ease-in-out hover:scale-110 hover:ring-2 hover:ring-purple-200"
           >
@@ -39,19 +39,29 @@ export default function Home() {
         {/* 주차 예약 */}
         <Link href="/reserve/parking">
           <button
-            className="w-full px-8 py-4 text-xl font-semibold text-white rounded-2xl shadow-xl border
+            className="w-full px-8 py-5 text-2xl font-semibold text-white rounded-2xl shadow-xl border
                        bg-[#C0392B] dark:bg-[#E74C3C] dark:border-red-300
                        transition-all duration-300 ease-in-out hover:scale-105"
           >
             주차 예약
           </button>
         </Link>
-
       </main>
 
-      {/* 푸터 */}
-      <footer className="mt-20 w-full">
-        <Footer />
+      {/* 하단 푸터 정보 */}
+      <footer className="mt-20 text-sm text-center text-black dark:text-white space-y-2 px-4">
+        <div>
+          <p>신흥모터스 & 앱스 대표 : 박경남</p>
+          <p>주소 : 부산광역시 강서구 대저중앙로 383-1</p>
+        </div>
+        <div>
+          <p>사업자등록번호 : 859-37-01635</p>
+          <p>호스팅서비스사업자 : Vercel Inc.</p>
+        </div>
+        <div>
+          <p>이메일 : <a href="mailto:apsauto@naver.com" className="text-blue-400 underline">apsauto@naver.com</a></p>
+          <p>고객센터 : <a href="tel:16684509" className="text-blue-400 underline">1668-4509</a></p>
+        </div>
       </footer>
     </div>
   );
