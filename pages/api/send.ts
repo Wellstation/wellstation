@@ -17,7 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const apiSecret = process.env.SOLAPI_API_SECRET!;
   const sender = process.env.SOLAPI_SENDER!;
 
-  const date = Date.now().toString();
+  // ✅ ISO 8601 형식의 date
+  const date = new Date().toISOString();
   const salt = crypto.randomBytes(16).toString('hex');
   const signature = crypto
     .createHmac('sha256', apiSecret)
