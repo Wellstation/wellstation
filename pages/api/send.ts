@@ -12,6 +12,10 @@ export default async function handler(
   try {
     const { name, phone, vehicle, date, message } = req.body;
 
+    if (!process.env.SOLAPI_API_KEY || !process.env.SENDER_PHONE) {
+      return res.status(500).json({ error: "환경 변수가 누락되었습니다." });
+    }
+
     const response = await axios.post(
       "https://api.solapi.com/messages/v4/send",
       {
@@ -29,9 +33,9 @@ export default async function handler(
       }
     );
 
-    return res.status(200).json({ success: true, response: response.data });
+    return res.status(200).json({ success: true, data: response.data });
   } catch (error: any) {
-    console.error("SMS 전송 실패:", error.response?.data || error.message);
-    return res.status(500).json({ error: "문자 전송 중 오류 발생" });
+    console.error("문자 전송 실패:", error?.response?.data || error.message);
+    return res.status(500).json({ error: "문자 전송 실패" });
   }
 }
