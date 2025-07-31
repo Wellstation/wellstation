@@ -20,7 +20,7 @@ export default function Home() {
         <ActionButton label="주차 예약" href="/reserve/parking" bgColor="bg-[#a52c1e]" />
       </main>
 
-      {/* 푸터 (절대 수정하지 않음) */}
+      {/* 푸터 – 건드리지 않음 */}
       <footer className="text-center text-[9px] text-gray-700 leading-[0.09] space-y-0.5">
         <p>신흥모터스 & 앱스 대표 : 박경남 | 주소 : 부산광역시 강서구 대저중앙로 383-1</p>
         <p>사업자등록번호 : 859-37-01635 | 호스팅서비스사업자 : Vercel Inc.</p>
