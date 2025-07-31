@@ -6,17 +6,16 @@ import ActionButton from '../components/ActionButton';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center bg-white dark:bg-black px-4 pt-4 pb-10">
-
+    <div className="flex flex-col items-center bg-white dark:bg-black px-4 pt-8 pb-20">
       {/* 로고 */}
-      <header className="flex justify-center mb-[81px]">
+      <header className="flex justify-center mb-10">
         <Image src="/logo1.svg" alt="로고" width={270} height={120} />
       </header>
 
       {/* 버튼 그룹 */}
-      <main className="flex flex-col items-center gap-[72px] mb-[96px]">
-        <ActionButton label="정비 예약" href="/reserve/repair" bgColor="bg-[#1C385B]" />
-        <ActionButton label="튜닝 예약" href="/reserve/tuning" bgColor="bg-[#8444dd]" />
+      <main className="flex flex-col items-center">
+        <ActionButton label="정비 예약" href="/reserve/repair" bgColor="bg-[#1C3058]" />
+        <ActionButton label="튜닝 예약" href="/reserve/tuning" bgColor="bg-[#8440dd]" />
         <ActionButton label="주차 예약" href="/reserve/parking" bgColor="bg-[#a52c1e]" />
       </main>
 
