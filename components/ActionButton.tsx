@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from 'next/link'
 
 interface ActionButtonProps {
   label: string;
@@ -10,17 +10,12 @@ interface ActionButtonProps {
 
 export default function ActionButton({ label, href, bgColor }: ActionButtonProps) {
   return (
-    <div className="my-10"> {/* 버튼 간 간격 넉넉히 */}
+    <div className="my-6 sm:my-8">
       <Link href={href}>
         <a>
           <button
-            className={`
-              w-72 h-16 
-              text-xl font-bold text-white 
-              ${bgColor} 
-              rounded-full shadow-lg 
-              hover:scale-105 transition-transform duration-300
-            `}
+            className={`w-72 h-16 text-lg sm:text-xl font-bold text-white ${bgColor}
+              rounded-full shadow-xl hover:scale-105 hover:opacity-90 transition-transform duration-300`}
           >
             {label}
           </button>
