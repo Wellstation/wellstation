@@ -10,27 +10,27 @@ export default function Home() {
 
       {/* 로고 */}
       <header className="flex justify-center mb-81">
-        <Image src="/logo1.svg" alt="로고" width={250} height={110} />
+        <Image src="/logo1.svg" alt="로고" width={270} height={120} />
       </header>
 
       {/* 버튼 그룹 */}
       <main className="flex flex-col items-center gap-18 mb-24">
         <Link href="/reserve/repair">
-          <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
+          <button className="min-w-[240px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
             정비 예약
           </button>
         </Link>
 
         <Link href="/reserve/tuning">
-          <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#8444dd] rounded-xl shadow-xl
+          <button className="min-w-[240px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#8444dd] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
             튜닝 예약
           </button>
         </Link>
 
         <Link href="/reserve/parking">
-          <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#a52c1e] rounded-xl shadow-xl
+          <button className="min-w-[240px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#a52c1e] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
             주차 예약
           </button>
