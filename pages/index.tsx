@@ -9,12 +9,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col justify-between bg-white dark:bg-black px-4 py-6">
 
       {/* 상단 로고 */}
-      <header className="flex justify-center mb-20">
+      <header className="flex justify-center mb-10">
         <Image src="/logo1.svg" alt="로고" width={250} height={110} />
       </header>
 
       {/* 버튼 그룹 */}
-      <main className="flex flex-col items-center gap-10">
+      <main className="flex flex-col items-center gap-20">
         <Link href="/reserve/repair">
           <button className="min-w-[240px] px-8 py-4 text-xl font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
@@ -38,7 +38,7 @@ export default function Home() {
       </main>
 
       {/* 하단 푸터 */}
-      <footer className="mt-20 text-center text-sm text-gray-700 leading-[1.5] space-y-1">
+      <footer className="mt-10 text-center text-sm text-gray-700 leading-[0.75] space-y-0.3">
         <p>신흥모터스 & 앱스 대표 : 박경남</p>
         <p>주소 : 부산광역시 강서구 대저중앙로 383-1</p>
         <p>사업자등록번호 : 859-37-01635</p>
