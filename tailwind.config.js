@@ -12,14 +12,19 @@ module.exports = {
     'duration-300',
     'text-white',
     'rounded-2xl',
-    'shadow-xl',
+    'shadow-lg',
+    'font-bold',
     'font-semibold',
     'bg-[#1C3058]',
-    'bg-[#8444dd]',
-    'bg-[#a52c1e]',
+    'bg-[#844dd4]',
+    'bg-[#fa52c1]',
   ],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        '999': '999px', // 캐시 무력화용 의미 없는 값
+      },
+    },
   },
   plugins: [],
 }
