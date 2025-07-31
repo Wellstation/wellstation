@@ -10,7 +10,7 @@ export default function Home() {
       
       {/* 로고 */}
       <header className="flex justify-center">
-        <Image src="/logo1.svg" alt="로고" width={200} height={100} className="sm:w-[270px] h-auto" />
+        <Image src="/logo1.svg" alt="로고" width={450} height={200} className="sm:w-[270px] h-auto" />
       </header>
 
       {/* 버튼 그룹 */}
