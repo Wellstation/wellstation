@@ -10,7 +10,7 @@ interface ActionButtonProps {
 
 export default function ActionButton({ label, href, bgColor }: ActionButtonProps) {
   return (
-    <div className="my-8"> {/* 버튼 간 충분한 간격 */}
+    <div className="my-10"> {/* 버튼 간 간격 넉넉히 */}
       <Link href={href}>
         <a>
           <button
