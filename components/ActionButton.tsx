@@ -13,7 +13,8 @@ export default function ActionButton({ label, href, bgColor }: ActionButtonProps
     <Link href={href}>
       <a>
         <button
-          className={`w-64 py-4 text-xl font-bold text-white ${bgColor} rounded-2xl shadow-lg hover:scale-105 transition-transform duration-200`}
+          className={`w-64 py-5 text-xl font-bold text-white ${bgColor} 
+            rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300`}
         >
           {label}
         </button>
