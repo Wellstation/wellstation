@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col justify-between bg-white dark:bg-black px-4 py-6">
 
       {/* 상단 로고 */}
-      <header className="flex justify-center mb-7">
+      <header className="flex justify-center mb-3">
         <Image src="/logo1.svg" alt="로고" width={250} height={110} />
       </header>
 
@@ -38,11 +38,9 @@ export default function Home() {
       </main>
 
       {/* 하단 푸터 */}
-      <footer className="mt-7 text-center text-sm text-gray-700 leading-[0.25] space-y-0.1">
-        <p>신흥모터스 & 앱스 대표 : 박경남</p>
-        <p>주소 : 부산광역시 강서구 대저중앙로 383-1</p>
-        <p>사업자등록번호 : 859-37-01635</p>
-        <p>호스팅서비스사업자 : Vercel Inc.</p>
+      <footer className="mt-3 text-center text-sm text-gray-700 leading-[0.25] space-y-0.1">
+        <p>신흥모터스 & 앱스 대표 : 박경남 | 주소 : 부산광역시 강서구 대저중앙로 383-1</p>
+        <p>사업자등록번호 : 859-37-01635 | 호스팅서비스사업자 : Vercel Inc.</p>
         <p>이메일 : <a href="mailto:apsauto@naver.com" className="text-blue-600">apsauto@naver.com</a></p>
         <p>고객센터 : <a href="tel:16684590" className="text-blue-600">1668-4590</a></p>
       </footer>
