@@ -6,15 +6,15 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center bg-white dark:bg-black px-4 pt-4 pb-6">
+    <div className="flex flex-col items-center bg-white dark:bg-black px-4 pt-4 pb-10">
 
       {/* 로고 */}
-      <header className="flex justify-center mb-16">
+      <header className="flex justify-center mb-24">
         <Image src="/logo1.svg" alt="로고" width={250} height={110} />
       </header>
 
       {/* 버튼 그룹 */}
-      <main className="flex flex-col items-center gap-5 mb-16">
+      <main className="flex flex-col items-center gap-6 mb-24">
         <Link href="/reserve/repair">
           <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
@@ -38,7 +38,7 @@ export default function Home() {
       </main>
 
       {/* 푸터 */}
-      <footer className="text-center text-sm text-gray-700 leading-[0.05] space-y-0.05">
+      <footer className="text-center text-xs text-gray-700 leading-snug space-y-1">
         <p>신흥모터스 & 앱스 대표 : 박경남 | 주소 : 부산광역시 강서구 대저중앙로 383-1</p>
         <p>사업자등록번호 : 859-37-01635 | 호스팅서비스사업자 : Vercel Inc.</p>
         <p>
