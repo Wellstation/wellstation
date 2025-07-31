@@ -14,7 +14,7 @@ export default function Home() {
       </header>
 
       {/* 버튼 그룹 */}
-      <main className="flex flex-col items-center gap-400">
+      <main className="flex flex-col items-center gap-0.1">
         <Link href="/reserve/repair">
           <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
