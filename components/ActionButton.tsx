@@ -1,3 +1,13 @@
+'use client';
+
+import Link from 'next/link';
+
+interface ActionButtonProps {
+  label: string;
+  href: string;
+  bgColor: string;
+}
+
 export default function ActionButton({ label, href, bgColor }: ActionButtonProps) {
   return (
     <div className="my-8"> {/* 버튼 간 충분한 간격 */}
