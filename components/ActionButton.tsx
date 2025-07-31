@@ -14,8 +14,8 @@ export default function ActionButton({ label, href, bgColor }: ActionButtonProps
       <Link href={href}>
         <a>
           <button
-            className={`w-72 h-16 text-lg sm:text-xl font-bold text-white ${bgColor}
-              rounded-full shadow-xl hover:scale-105 hover:opacity-90 transition-transform duration-300`}
+            className={`w-72 h-16 text-xl font-bold text-yellow-300 ${bgColor}
+              rounded-full shadow-xl hover:scale-110 hover:opacity-90 transition-transform duration-300`}
           >
             {label}
           </button>
