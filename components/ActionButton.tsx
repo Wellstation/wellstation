@@ -1,22 +1,24 @@
+// components/ReservationButton.tsx
 'use client';
 
-import Link from 'next/link';
+import React from 'react';
 
-interface ActionButtonProps {
-  label: string;
-  href: string;
-  bgColor: string;
+interface ReservationButtonProps {
+  text: string;
+  color: string;
+  onClick?: () => void;
 }
 
-export default function ActionButton({ label, href, bgColor }: ActionButtonProps) {
+const ReservationButton: React.FC<ReservationButtonProps> = ({ text, color, onClick }) => {
   return (
-    <Link href={href}>
-      <button
-        className={`px-8 py-5 text-lg font-semibold text-white rounded-full shadow-lg
-                    hover:opacity-90 hover:scale-105 transition duration-300 ${bgColor}`}
-      >
-        {label}
-      </button>
-    </Link>
+    <button
+      onClick={onClick}
+      className={`w-[250px] py-6 rounded-2xl text-white text-xl font-bold shadow-lg hover:brightness-110 transition-all duration-200 ${color}`}
+    >
+      {text}
+    </button>
   );
-}
+};
+
+export default ReservationButton;
+
