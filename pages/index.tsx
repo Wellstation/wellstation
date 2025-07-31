@@ -9,12 +9,12 @@ export default function Home() {
     <div className="flex flex-col items-center bg-white dark:bg-black px-4 pt-4 pb-10">
 
       {/* 로고 */}
-      <header className="flex justify-center mb-24">
+      <header className="flex justify-center mb-81">
         <Image src="/logo1.svg" alt="로고" width={250} height={110} />
       </header>
 
       {/* 버튼 그룹 */}
-      <main className="flex flex-col items-center gap-6 mb-24">
+      <main className="flex flex-col items-center gap-18 mb-24">
         <Link href="/reserve/repair">
           <button className="min-w-[260px] px-10 py-5 text-[1.25rem] font-semibold text-white bg-[#1C385B] rounded-xl shadow-xl
                             hover:opacity-90 hover:scale-105 transition duration-300">
