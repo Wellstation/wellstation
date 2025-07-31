@@ -5,23 +5,23 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
   safelist: [
-  'hover:scale-105',
+  'text-yellow-300',
+  'bg-[#0D3B66]',
+  'bg-[#7209B7]',
+  'bg-[#D62828]',
+  // 기존 스타일 유지
+  'hover:scale-110',
   'hover:opacity-90',
-  'transition',
-  'duration-300',
-  'text-white',
   'rounded-full',
   'shadow-xl',
   'font-bold',
-  'text-lg',
   'text-xl',
   'w-72',
   'h-16',
-  'bg-[#1C3058]',
-  'bg-[#844dd4]',
-  'bg-[#fa52c1]',
+  'transition-transform',
+  'duration-300',
   'my-6',
-  'sm:my-8'
+  'sm:my-8',
 ],
   theme: {
     extend: {
