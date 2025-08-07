@@ -118,9 +118,13 @@ export const reservationHelpers = {
       if (error.code === "23505") {
         // Unique constraint violation - check which constraint was violated
         if (error.message.includes("idx_reservations_unique_service_date")) {
-          throw new Error("이미 예약된 시간대입니다. 다른 시간을 선택해주세요.");
+          throw new Error(
+            "이미 예약된 시간대입니다. 다른 시간을 선택해주세요."
+          );
         } else {
-          throw new Error("중복된 예약이 감지되었습니다. 다른 시간을 선택해주세요.");
+          throw new Error(
+            "중복된 예약이 감지되었습니다. 다른 시간을 선택해주세요."
+          );
         }
       }
       throw error;
@@ -320,20 +324,6 @@ export const reservationHelpers = {
     }
 
     return availableSlots;
-  },
-
-  // Get service schedule for a specific day
-  async getServiceSchedule(serviceType: ServiceType, dayOfWeek: number) {
-    const { data, error } = await supabase
-      .from("service_schedules")
-      .select("*")
-      .eq("service_type", serviceType)
-      .eq("day_of_week", dayOfWeek)
-      .eq("is_active", true)
-      .order("start_time", { ascending: true });
-
-    if (error) throw error;
-    return data;
   },
 };
 

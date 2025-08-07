@@ -93,11 +93,56 @@ export default function WorkRecordsPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('정말로 이 작업 기록을 삭제하시겠습니까?')) {
+        if (!confirm('정말로 이 작업 기록을 삭제하시겠습니까?\n\n이 작업과 관련된 모든 이미지도 함께 삭제됩니다.')) {
             return;
         }
 
         try {
+            // 먼저 관련된 이미지들의 정보를 가져옴
+            const { data: workImages, error: fetchError } = await supabase
+                .from('work_images')
+                .select('*')
+                .eq('work_record_id', id);
+
+            if (fetchError) {
+                console.error('Error fetching work images:', fetchError);
+            }
+
+            // Supabase Storage에서 이미지 파일들 삭제
+            if (workImages && workImages.length > 0) {
+                const imageUrls = workImages.map(img => img.image_url);
+
+                for (const imageUrl of imageUrls) {
+                    try {
+                        // URL에서 파일 경로 추출
+                        const urlParts = imageUrl.split('/');
+                        const fileName = urlParts[urlParts.length - 1];
+                        const filePath = `work-images/${fileName}`;
+
+                        const { error: storageError } = await supabase.storage
+                            .from('work-images')
+                            .remove([filePath]);
+
+                        if (storageError) {
+                            console.error('Error deleting image from storage:', storageError);
+                        }
+                    } catch (storageError) {
+                        console.error('Error deleting image from storage:', storageError);
+                    }
+                }
+            }
+
+            // 데이터베이스에서 이미지 레코드들 삭제
+            const { error: imagesError } = await supabase
+                .from('work_images')
+                .delete()
+                .eq('work_record_id', id);
+
+            if (imagesError) {
+                console.error('Error deleting work images:', imagesError);
+            }
+
+            // 작업 내역 삭제
             const { error } = await supabase
                 .from('work_records')
                 .delete()

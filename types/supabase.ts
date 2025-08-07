@@ -14,27 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_auth: {
+      feedback: {
         Row: {
+          contact: string
+          content: string
           created_at: string | null
           id: string
-          password_hash: string
+          name: string
+          rating: number | null
+          service_type: string
           updated_at: string | null
-          username: string
+          visit_date: string | null
         }
         Insert: {
+          contact: string
+          content: string
           created_at?: string | null
           id?: string
-          password_hash: string
+          name: string
+          rating?: number | null
+          service_type: string
           updated_at?: string | null
-          username?: string
+          visit_date?: string | null
         }
         Update: {
+          contact?: string
+          content?: string
           created_at?: string | null
           id?: string
-          password_hash?: string
+          name?: string
+          rating?: number | null
+          service_type?: string
           updated_at?: string | null
-          username?: string
+          visit_date?: string | null
         }
         Relationships: []
       }
@@ -103,79 +115,64 @@ export type Database = {
       }
       reservations: {
         Row: {
+          cancelled_date: string | null
           created_at: string | null
           etc: string | null
           id: string
           model: string | null
           name: string
+          next_inspection_date: string | null
+          notes: string | null
           phone: string
           request: string | null
           reservation_date: string
           service_type: string
+          status: string
           updated_at: string | null
           vehicle_info: string | null
           vin: string | null
+          visited_date: string | null
+          work_details: string | null
         }
         Insert: {
+          cancelled_date?: string | null
           created_at?: string | null
           etc?: string | null
           id?: string
           model?: string | null
           name: string
+          next_inspection_date?: string | null
+          notes?: string | null
           phone: string
           request?: string | null
           reservation_date: string
           service_type: string
+          status?: string
           updated_at?: string | null
           vehicle_info?: string | null
           vin?: string | null
+          visited_date?: string | null
+          work_details?: string | null
         }
         Update: {
+          cancelled_date?: string | null
           created_at?: string | null
           etc?: string | null
           id?: string
           model?: string | null
           name?: string
+          next_inspection_date?: string | null
+          notes?: string | null
           phone?: string
           request?: string | null
           reservation_date?: string
           service_type?: string
+          status?: string
           updated_at?: string | null
           vehicle_info?: string | null
           vin?: string | null
-        }
-        Relationships: []
-      }
-      service_schedules: {
-        Row: {
-          created_at: string | null
-          day_of_week: number
-          end_time: string
-          id: string
-          is_active: boolean | null
-          service_type: string
-          start_time: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          day_of_week: number
-          end_time: string
-          id?: string
-          is_active?: boolean | null
-          service_type: string
-          start_time: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          day_of_week?: number
-          end_time?: string
-          id?: string
-          is_active?: boolean | null
-          service_type?: string
-          start_time?: string
-          updated_at?: string | null
+          visited_date?: string | null
+          work_details?: string | null
         }
         Relationships: []
       }
@@ -388,10 +385,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      verify_admin_password: {
-        Args: { input_password: string; stored_password: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

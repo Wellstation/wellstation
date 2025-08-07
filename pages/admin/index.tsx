@@ -89,7 +89,7 @@ export default function AdminDashboard() {
 
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         {/* 메뉴 그리드 */}
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                             <Link href="/admin/reservations" className="bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden shadow-lg rounded-lg hover:bg-white/20 transition-all duration-300 h-48 flex items-center">
                                 <div className="p-6 w-full">
                                     <div className="flex flex-col items-center text-center">
@@ -154,6 +154,23 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-medium text-white mb-2">이미지 갤러리</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+
+                            <Link href="/admin/feedback" className="bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden shadow-lg rounded-lg hover:bg-white/20 transition-all duration-300 h-48 flex items-center">
+                                <div className="p-6 w-full">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="flex-shrink-0 mb-4">
+                                            <div className="w-16 h-16 bg-green-500 rounded-md flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-medium text-white mb-2">피드백 관리</h3>
                                         </div>
                                     </div>
                                 </div>

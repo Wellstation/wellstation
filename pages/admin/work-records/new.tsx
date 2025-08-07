@@ -58,7 +58,7 @@ export default function WorkRecordFormPage() {
                 return;
             }
 
-            const convertedRecord = convertDatabaseWorkRecord(workRecordData as any);
+            const convertedRecord = convertDatabaseWorkRecord(workRecordData);
             setWorkRecord({
                 service_type: convertedRecord.service_type,
                 work_title: convertedRecord.work_title,
@@ -97,6 +97,39 @@ export default function WorkRecordFormPage() {
 
     const removeExistingImage = async (imageId: string) => {
         try {
+            // 먼저 이미지 정보를 가져옴
+            const { data: imageData, error: fetchError } = await supabase
+                .from('work_images')
+                .select('*')
+                .eq('id', imageId)
+                .single();
+
+            if (fetchError) {
+                console.error('Error fetching image data:', fetchError);
+                alert('이미지 정보를 가져올 수 없습니다.');
+                return;
+            }
+
+            // Supabase Storage에서 이미지 파일 삭제
+            if (imageData && imageData.image_url) {
+                try {
+                    const urlParts = imageData.image_url.split('/');
+                    const fileName = urlParts[urlParts.length - 1];
+                    const filePath = `work-images/${fileName}`;
+
+                    const { error: storageError } = await supabase.storage
+                        .from('work-images')
+                        .remove([filePath]);
+
+                    if (storageError) {
+                        console.error('Error deleting image from storage:', storageError);
+                    }
+                } catch (storageError) {
+                    console.error('Error deleting image from storage:', storageError);
+                }
+            }
+
+            // 데이터베이스에서 이미지 레코드 삭제
             const { error } = await supabase
                 .from('work_images')
                 .delete()
@@ -124,7 +157,7 @@ export default function WorkRecordFormPage() {
             const filePath = `work-images/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
-                .from('gallery-images')
+                .from('work-images')
                 .upload(filePath, image);
 
             if (uploadError) {
@@ -133,7 +166,7 @@ export default function WorkRecordFormPage() {
             }
 
             const { data: { publicUrl } } = supabase.storage
-                .from('gallery-images')
+                .from('work-images')
                 .getPublicUrl(filePath);
 
             return {

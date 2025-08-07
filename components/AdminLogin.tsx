@@ -1,13 +1,12 @@
 "use client";
 
-import { supabase } from "@/supabase/client";
 import { useState } from "react";
 
 interface AdminLoginProps {
-    onLoginSuccess: () => void;
+    login: (email: string, password: string) => Promise<{ success?: boolean; error?: string }>;
 }
 
-export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
+export default function AdminLogin({ login }: AdminLoginProps) {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -18,51 +17,14 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         setError("");
 
         try {
-            // 비밀번호 검증
-            console.log("Attempting to query admin_auth table...");
-            const { data, error } = await supabase
-                .from("admin_auth")
-                .select("password_hash")
-                .eq("username", "admin")
-                .single();
+            const result = await login("apsauto@naver.com", password);
 
-            console.log("Supabase query result:", { data, error });
-            if (error) {
-                console.error("Supabase error details:", {
-                    code: error.code,
-                    message: error.message,
-                    details: error.details,
-                    hint: error.hint
-                });
+            if (result.error) {
+                setError(result.error);
             }
-
-            if (error) {
-                alert("관리자 계정을 찾을 수 없습니다.");
-                setError("관리자 계정을 찾을 수 없습니다.");
-                return;
-            }
-
-            // 비밀번호 확인 (평문 비교)
-            const { data: verifyData, error: verifyError } = await supabase
-                .rpc("verify_admin_password", {
-                    input_password: password,
-                    stored_password: data.password_hash
-                });
-
-            if (verifyError || !verifyData) {
-                alert("비밀번호가 올바르지 않습니다.");
-                setError("비밀번호가 올바르지 않습니다.");
-                return;
-            }
-
-            // 로그인 성공 - 세션에 저장
-            sessionStorage.setItem("adminAuthenticated", "true");
-            onLoginSuccess();
-
         } catch (error) {
             console.error("Login error:", error);
             const errorMessage = error instanceof Error ? error.message : "로그인에 실패했습니다.";
-            alert(errorMessage);
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -102,7 +64,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? "로그인 중..." : "로그인"}
                     </button>

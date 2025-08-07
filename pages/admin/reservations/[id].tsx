@@ -2,7 +2,7 @@
 import { supabase } from '@/supabase/client';
 import { convertDatabaseReservation, Reservation } from '@/types/api';
 import { ServiceType } from '@/types/enums';
-import { cancelReservation } from '@/utils/reservation';
+import { cancelReservation, completeVisit } from '@/utils/reservation';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,8 +16,13 @@ export default function ReservationDetail() {
     const [loading, setLoading] = useState(true);
     const [smsStatus, setSmsStatus] = useState<"pending" | "success" | "failed" | null>(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
-    const [shouldSendSMS, setShouldSendSMS] = useState(true);
+    const [workDetails, setWorkDetails] = useState("");
+    const [nextInspectionDate, setNextInspectionDate] = useState("");
+    const [notes, setNotes] = useState("");
+    const [shouldSendCancelSMS, setShouldSendCancelSMS] = useState(true);
+    const [shouldSendVisitSMS, setShouldSendVisitSMS] = useState(true);
 
     useEffect(() => {
         if (id) {
@@ -104,11 +109,19 @@ export default function ReservationDetail() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'confirmed': return 'bg-green-500/20 text-green-300 border-green-500/30';
-            case 'pending': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+            case 'reserved': return 'bg-green-500/20 text-green-300 border-green-500/30';
             case 'cancelled': return 'bg-red-500/20 text-red-300 border-red-500/30';
-            case 'completed': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+            case 'visited': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
             default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        }
+    };
+
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'reserved': return '예약 완료';
+            case 'cancelled': return '예약 취소';
+            case 'visited': return '방문 완료';
+            default: return '예약 완료';
         }
     };
 
@@ -124,17 +137,50 @@ export default function ReservationDetail() {
     const handleCancelReservation = async () => {
         if (!reservation) return;
 
+        const confirmed = window.confirm('정말로 이 예약을 취소하시겠습니까?');
+        if (!confirmed) return;
+
         const success = await cancelReservation(
             reservation,
             { setSmsStatus },
             () => router.push('/admin/reservations'),
             cancelReason,
-            shouldSendSMS
+            shouldSendCancelSMS
         );
 
         if (success) {
             setShowCancelModal(false);
             setCancelReason("");
+        }
+    };
+
+    const handleCompleteVisit = async () => {
+        if (!reservation) return;
+
+        const confirmed = window.confirm('정말로 방문 완료 처리를 하시겠습니까?');
+        if (!confirmed) return;
+
+        const success = await completeVisit(
+            reservation,
+            workDetails,
+            nextInspectionDate || undefined,
+            notes || undefined,
+            { setSmsStatus },
+            () => {
+                setShowCompleteModal(false);
+                setWorkDetails("");
+                setNextInspectionDate("");
+                setNotes("");
+                router.push('/admin/reservations');
+            },
+            shouldSendVisitSMS
+        );
+
+        if (success) {
+            setShowCompleteModal(false);
+            setWorkDetails("");
+            setNextInspectionDate("");
+            setNotes("");
         }
     };
 
@@ -212,12 +258,24 @@ export default function ReservationDetail() {
                     <div className="glass rounded-xl backdrop-blur-sm p-8 border border-white/10">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-white">{getServiceTypeLabel(reservation.service_type)} 예약 상세</h2>
-                            <button
-                                onClick={() => setShowCancelModal(true)}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                            >
-                                예약 취소
-                            </button>
+                            <div className="flex gap-2">
+                                {(reservation).status !== 'cancelled' && reservation.status !== 'visited' && reservation.status !== 'completed' && reservation.status !== 'pending' && (
+                                    <button
+                                        onClick={() => setShowCompleteModal(true)}
+                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                                    >
+                                        방문 완료
+                                    </button>
+                                )}
+                                {(reservation).status !== 'cancelled' && (
+                                    <button
+                                        onClick={() => setShowCancelModal(true)}
+                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                                    >
+                                        예약 취소
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <div className="space-y-6">
@@ -228,11 +286,8 @@ export default function ReservationDetail() {
                                             {/* 헤더 */}
                                             <div className="flex items-center justify-between gap-3 mb-4">
                                                 <div className="flex items-center gap-2">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor('confirmed')}`}>
-                                                        예약됨
-                                                    </span>
-                                                    <span className="text-white/40 text-xs">
-                                                        {new Date(reservation.created_at || '').toLocaleString('ko-KR')}
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor((reservation).status || 'reserved')}`}>
+                                                        {getStatusLabel((reservation).status || 'reserved')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -310,6 +365,42 @@ export default function ReservationDetail() {
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {/* 방문 완료 정보 */}
+                                            {(reservation).status === 'visited' && (
+                                                <div className="border-t border-white/10 pt-4">
+                                                    <h4 className="text-sm font-medium text-white/60 mb-3">방문 완료 정보</h4>
+                                                    <div className="space-y-3">
+                                                        <div className="bg-gray-800/30 rounded-lg p-3">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                                <div className="text-white/60 text-xs">작업 내용</div>
+                                                            </div>
+                                                            <div className="text-white/80 text-sm">{(reservation).work_details || '입력된 내용이 없습니다'}</div>
+                                                        </div>
+                                                        <div className="bg-gray-800/30 rounded-lg p-3">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                                </svg>
+                                                                <div className="text-white/60 text-xs">다음 점검일</div>
+                                                            </div>
+                                                            <div className="text-white/80 text-sm">{(reservation).next_inspection_date ? new Date((reservation).next_inspection_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '입력된 내용이 없습니다'}</div>
+                                                        </div>
+                                                        <div className="bg-gray-800/30 rounded-lg p-3">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                </svg>
+                                                                <div className="text-white/60 text-xs">특이사항</div>
+                                                            </div>
+                                                            <div className="text-white/80 text-sm">{(reservation).notes || '입력된 내용이 없습니다'}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -342,12 +433,12 @@ export default function ReservationDetail() {
                         <div className="flex items-center mb-4">
                             <input
                                 type="checkbox"
-                                id="sendSMS"
-                                checked={shouldSendSMS}
-                                onChange={(e) => setShouldSendSMS(e.target.checked)}
+                                id="sendCancelSMS"
+                                checked={shouldSendCancelSMS}
+                                onChange={(e) => setShouldSendCancelSMS(e.target.checked)}
                                 className="mr-2 text-white focus:ring-blue-500 border-gray-600 rounded"
                             />
-                            <label htmlFor="sendSMS" className="text-white/60 text-sm">SMS 발송</label>
+                            <label htmlFor="sendCancelSMS" className="text-white/60 text-sm">SMS 발송 (알림톡)</label>
                         </div>
 
                         <div className="flex gap-3">
@@ -355,7 +446,7 @@ export default function ReservationDetail() {
                                 onClick={() => {
                                     setShowCancelModal(false);
                                     setCancelReason("");
-                                    setShouldSendSMS(true); // 취소 시 기본값으로 변경
+                                    setShouldSendCancelSMS(true); // 취소 시 기본값으로 변경
                                 }}
                                 className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                             >
@@ -366,6 +457,85 @@ export default function ReservationDetail() {
                                 className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                             >
                                 예약 취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 방문 완료 모달 */}
+            {showCompleteModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md mx-4 border border-white/10">
+                        <h3 className="text-xl font-bold text-white mb-4">방문 완료</h3>
+                        <p className="text-white/60 mb-4">
+                            방문 완료 처리를 하시겠습니까? 작업 내용을 입력해주세요.
+                        </p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-white/60 text-sm mb-2">작업 내용 *</label>
+                                <textarea
+                                    value={workDetails}
+                                    onChange={(e) => setWorkDetails(e.target.value)}
+                                    placeholder="수행한 작업 내용을 입력해주세요"
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                                    rows={3}
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-white/60 text-sm mb-2">다음 점검일</label>
+                                <input
+                                    type="date"
+                                    value={nextInspectionDate}
+                                    onChange={(e) => setNextInspectionDate(e.target.value)}
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-white/60 text-sm mb-2">특이사항</label>
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    placeholder="특이사항이 있다면 입력해주세요"
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                                    rows={2}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center mb-4">
+                            <input
+                                type="checkbox"
+                                id="sendVisitSMS"
+                                checked={shouldSendVisitSMS}
+                                onChange={(e) => setShouldSendVisitSMS(e.target.checked)}
+                                className="mr-2 text-white focus:ring-blue-500 border-gray-600 rounded"
+                            />
+                            <label htmlFor="sendVisitSMS" className="text-white/60 text-sm">SMS 발송 (알림톡)</label>
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => {
+                                    setShowCompleteModal(false);
+                                    setWorkDetails("");
+                                    setNextInspectionDate("");
+                                    setNotes("");
+                                }}
+                                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                            >
+                                취소
+                            </button>
+                            <button
+                                onClick={handleCompleteVisit}
+                                disabled={!workDetails.trim()}
+                                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg"
+                            >
+                                방문 완료
                             </button>
                         </div>
                     </div>

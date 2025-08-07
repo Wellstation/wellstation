@@ -43,7 +43,7 @@ export default function WorkRecordDetailPage() {
                 setError('작업 내역을 불러올 수 없습니다.');
                 console.error('Error fetching work record:', error);
             } else {
-                const convertedRecord = convertDatabaseWorkRecord(data as any);
+                const convertedRecord = convertDatabaseWorkRecord(data);
                 setWorkRecord(convertedRecord);
                 setLikesCount(convertedRecord.likes_count || 0);
                 setViewsCount(convertedRecord.views_count || 0);

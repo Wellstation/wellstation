@@ -86,11 +86,19 @@ export default function ServiceTypeReservationSearch() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'confirmed': return 'bg-green-500/20 text-green-300 border-green-500/30';
-            case 'pending': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+            case 'reserved': return 'bg-green-500/20 text-green-300 border-green-500/30';
+            case 'visited': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
             case 'cancelled': return 'bg-red-500/20 text-red-300 border-red-500/30';
-            case 'completed': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
             default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        }
+    };
+
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'reserved': return '예약 완료';
+            case 'visited': return '방문 완료';
+            case 'cancelled': return '예약 취소';
+            default: return '알 수 없음';
         }
     };
 
@@ -319,11 +327,8 @@ export default function ServiceTypeReservationSearch() {
                                                     {/* 헤더 */}
                                                     <div className="flex items-center justify-between gap-3 mb-4">
                                                         <div className="flex items-center gap-2">
-                                                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor('confirmed')}`}>
-                                                                예약됨
-                                                            </span>
-                                                            <span className="text-white/40 text-xs">
-                                                                {new Date(reservation.created_at || '').toLocaleString('ko-KR')}
+                                                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor((reservation).status || 'reserved')}`}>
+                                                                {getStatusLabel((reservation).status || 'reserved')}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -398,6 +403,42 @@ export default function ServiceTypeReservationSearch() {
                                                                         <div className="text-white/80 text-sm">{reservation.etc}</div>
                                                                     </div>
                                                                 )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* 방문 완료 정보 */}
+                                                    {(reservation).status === 'visited' && (
+                                                        <div className="border-t border-white/10 pt-4">
+                                                            <h4 className="text-sm font-medium text-white/60 mb-3">방문 완료 정보</h4>
+                                                            <div className="space-y-3">
+                                                                <div className="bg-gray-800/30 rounded-lg p-3">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                        </svg>
+                                                                        <div className="text-white/60 text-xs">작업 내용</div>
+                                                                    </div>
+                                                                    <div className="text-white/80 text-sm">{(reservation).work_details || '입력된 내용이 없습니다'}</div>
+                                                                </div>
+                                                                <div className="bg-gray-800/30 rounded-lg p-3">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                                        </svg>
+                                                                        <div className="text-white/60 text-xs">다음 점검일</div>
+                                                                    </div>
+                                                                    <div className="text-white/80 text-sm">{(reservation).next_inspection_date ? new Date((reservation).next_inspection_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '입력된 내용이 없습니다'}</div>
+                                                                </div>
+                                                                <div className="bg-gray-800/30 rounded-lg p-3">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                        </svg>
+                                                                        <div className="text-white/60 text-xs">특이사항</div>
+                                                                    </div>
+                                                                    <div className="text-white/80 text-sm">{(reservation).notes || '입력된 내용이 없습니다'}</div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}

@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import React from 'react';
 
 interface AdminHeaderProps {
     title: string;

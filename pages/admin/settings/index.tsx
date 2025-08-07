@@ -187,8 +187,8 @@ export default function SettingsPage() {
                                 onClick={handleSaveSettings}
                                 disabled={!hasChanges()}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${hasChanges()
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    : 'bg-gray-500 text-gray-300 cursor-not-allowed'
                                     }`}
                             >
                                 저장

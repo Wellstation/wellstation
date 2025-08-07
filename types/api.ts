@@ -44,13 +44,6 @@ export interface ServiceSetting
   updated_at: string;
 }
 
-export interface ServiceSchedule
-  extends Omit<Tables<"service_schedules">, "service_type"> {
-  service_type: ServiceType;
-  created_at: string;
-  updated_at: string;
-}
-
 // Type conversion utilities for enum validation
 export function validateServiceType(serviceType: string): ServiceType {
   return isValidServiceType(serviceType)
@@ -108,18 +101,6 @@ export function getTypedServiceSetting(
   };
 }
 
-// Helper function to get typed service schedule with validated service_type
-export function getTypedServiceSchedule(
-  dbServiceSchedule: Tables<"service_schedules">
-): ServiceSchedule {
-  return {
-    ...dbServiceSchedule,
-    service_type: validateServiceType(dbServiceSchedule.service_type),
-    created_at: dbServiceSchedule.created_at || new Date().toISOString(),
-    updated_at: dbServiceSchedule.updated_at || new Date().toISOString(),
-  };
-}
-
 // Legacy conversion functions for backward compatibility
 // These can be gradually removed as components are updated to use Tables directly
 
@@ -154,10 +135,4 @@ export function convertDatabaseServiceSetting(
   dbServiceSetting: Tables<"service_settings">
 ): ServiceSetting {
   return getTypedServiceSetting(dbServiceSetting);
-}
-
-export function convertDatabaseServiceSchedule(
-  dbServiceSchedule: Tables<"service_schedules">
-): ServiceSchedule {
-  return getTypedServiceSchedule(dbServiceSchedule);
 }

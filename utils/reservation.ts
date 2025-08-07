@@ -30,6 +30,20 @@ export const SMS_TEMPLATES = {
 - 차량 정보: #{vehicle}
 - 취소 사유: #{reason}`,
   },
+
+  // 방문 완료 템플릿
+  VISIT_COMPLETED: {
+    template: `[방문 완료]
+#{name}님의 #{serviceType} 서비스가 완료되었습니다.
+
+서비스 정보:
+- 방문일시: #{visitDate}
+- 서비스: #{serviceType}
+- 차량 정보: #{vehicle}
+- 작업 내용: #{workDetails}
+- 다음 점검일: #{nextInspectionDate}
+- 특이사항: #{notes}`,
+  },
 };
 
 // 카카오톡 템플릿 관리
@@ -42,6 +56,11 @@ export const KAKAO_TEMPLATES = {
   // 예약 취소 템플릿
   RESERVATION_CANCELLED: {
     templateId: "KA01TP250806082222102pAuAlZ6Abyt",
+  },
+
+  // 방문 완료 템플릿
+  VISIT_COMPLETED: {
+    templateId: "KA01TP250807122029634T15IrB6rq2x",
   },
 };
 
@@ -82,6 +101,10 @@ export const templateHelpers = {
       request: "요청사항",
       reason: "취소 사유",
       etc: "기타 사항",
+      visitDate: "방문일시",
+      workDetails: "작업 내용",
+      nextInspectionDate: "다음 점검일",
+      notes: "특이사항",
     };
   },
 
@@ -180,9 +203,13 @@ export const sendKakaoMessage = async (
 // 통합 메시지 전송 함수 (카카오톡 우선, 실패 시 SMS)
 export const sendMessage = async (
   phone: string,
-  templateType: "RESERVATION_CONFIRMED" | "RESERVATION_CANCELLED",
+  templateType:
+    | "RESERVATION_CONFIRMED"
+    | "RESERVATION_CANCELLED"
+    | "VISIT_COMPLETED",
   variables: Record<string, string>,
-  callback?: SMSCallback
+  callback?: SMSCallback,
+  addText?: string
 ) => {
   try {
     // 카카오톡 템플릿 정보 가져오기
@@ -205,7 +232,11 @@ export const sendMessage = async (
     // 카카오톡 전송 실패 시 SMS로 전송
     console.log("카카오톡 전송 실패, SMS로 전송 시도");
     const smsText = replaceTemplateVariables(smsTemplate.template, variables);
-    const smsSuccess = await sendSMS(phone, smsText, callback);
+    const smsSuccess = await sendSMS(
+      phone,
+      smsText + `\n\n${addText}`,
+      callback
+    );
 
     if (smsSuccess) {
       console.log("SMS 전송 성공");
@@ -231,11 +262,14 @@ export const cancelReservation = async (
   try {
     const { error } = await supabase
       .from("reservations")
-      .delete()
+      .update({
+        status: "cancelled",
+        cancelled_date: new Date().toISOString(),
+      })
       .eq("id", reservation.id);
 
     if (error) {
-      console.error("Error deleting reservation:", error);
+      console.error("Error cancelling reservation:", error);
       alert("예약 취소 중 오류가 발생했습니다.");
       return false;
     } else {
@@ -288,7 +322,7 @@ export const cancelReservation = async (
       return true;
     }
   } catch (error) {
-    console.error("Error deleting reservation:", error);
+    console.error("Error cancelling reservation:", error);
     alert("예약 취소 중 오류가 발생했습니다.");
     return false;
   }
@@ -339,6 +373,135 @@ export const sendReservationConfirmationSMS = async (
     );
   } catch (error) {
     console.error("예약 완료 메시지 전송 중 오류:", error);
+    return false;
+  }
+};
+
+// 방문 완료 메시지 전송 함수 (카카오톡 우선, 실패 시 SMS)
+export const sendVisitCompletionSMS = async (
+  reservation: Reservation,
+  workDetails: string,
+  nextInspectionDate?: string,
+  notes?: string,
+  callback?: SMSCallback,
+  addText?: string
+) => {
+  try {
+    const visitDate = new Date(reservation.reservation_date);
+    const formattedVisitDate = visitDate.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      weekday: "long",
+    });
+
+    const serviceTypeLabel = getServiceTypeLabel(reservation.service_type);
+
+    // 차량 정보 구성
+    const vehicle =
+      reservation.service_type === "parking"
+        ? reservation.vehicle_info || "-"
+        : `${reservation.model || "-"}${
+            reservation.vin ? ` (${reservation.vin})` : ""
+          }`;
+
+    const variables = {
+      name: reservation.name,
+      phone: reservation.phone,
+      serviceType: serviceTypeLabel,
+      visitDate: formattedVisitDate,
+      vehicle: vehicle,
+      workDetails: workDetails,
+      nextInspectionDate: nextInspectionDate || "미정",
+      notes: notes || "없음",
+    };
+
+    // 통합 메시지 전송 (카카오톡 우선, 실패 시 SMS)
+    return await sendMessage(
+      reservation.phone,
+      "VISIT_COMPLETED",
+      variables,
+      callback,
+      addText
+    );
+  } catch (error) {
+    console.error("방문 완료 메시지 전송 중 오류:", error);
+    return false;
+  }
+};
+
+// 방문 완료 처리 함수 (상태 변경 + 메시지 전송)
+export const completeVisit = async (
+  reservation: Reservation,
+  workDetails: string,
+  nextInspectionDate?: string,
+  notes?: string,
+  callback?: SMSCallback,
+  onSuccess?: () => void,
+  shouldSendSMS?: boolean
+) => {
+  try {
+    // 예약 상태를 'visited'로 변경하고 방문 완료 정보 저장
+    const { error } = await supabase
+      .from("reservations")
+      .update({
+        status: "visited",
+        visited_date: new Date().toISOString(),
+        work_details: workDetails,
+        next_inspection_date: nextInspectionDate || null,
+        notes: notes || null,
+      })
+      .eq("id", reservation.id);
+
+    if (error) {
+      console.error("Error updating reservation status:", error);
+      alert("방문 완료 처리 중 오류가 발생했습니다.");
+      return false;
+    } else {
+      alert("방문 완료 처리되었습니다.");
+
+      // SMS 전송 (shouldSendSMS가 true인 경우에만)
+      if (shouldSendSMS) {
+        // 방문일시를 한국 시간으로 변환
+        const visitDate = new Date(reservation.reservation_date);
+        const formattedVisitDate =
+          visitDate
+            .toLocaleString("ko-KR", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            .replace(/\. /g, "-")
+            .replace(/\./g, "")
+            .replace(/ /g, "T") + ":00";
+
+        await sendVisitCompletionSMS(
+          reservation,
+          workDetails,
+          nextInspectionDate,
+          notes,
+          callback,
+          `피드백 남기기: https://wellstation.app/feedback?name=${encodeURIComponent(
+            reservation.name
+          )}&phone=${encodeURIComponent(reservation.phone)}&serviceType=${
+            reservation.service_type
+          }&visitDate=${encodeURIComponent(formattedVisitDate)}`
+        );
+      }
+
+      if (onSuccess) {
+        onSuccess();
+      }
+
+      return true;
+    }
+  } catch (error) {
+    console.error("Error completing visit:", error);
+    alert("방문 완료 처리 중 오류가 발생했습니다.");
     return false;
   }
 };

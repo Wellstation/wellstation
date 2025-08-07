@@ -37,10 +37,6 @@ CREATE TRIGGER update_reservations_updated_at
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow all operations (you can modify this based on your needs)
-CREATE POLICY "Allow all operations on reservations" ON public.reservations
-    FOR ALL USING (true);
-
 -- Grant necessary permissions
 GRANT ALL ON public.reservations TO authenticated;
 GRANT ALL ON public.reservations TO anon; 
