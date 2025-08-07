@@ -2,14 +2,18 @@
   "name": "wellstation",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "tsc --noEmit",
+    "supabase:migrate": "supabase db push",
+    "supabase:types": "supabase gen types typescript --project-id qchqceinucagirunjawc > types/supabase.ts"
   },
   "dependencies": {
-    "axios": "^1.11.0",
+    "@supabase/supabase-js": "^2",
+    "axios": "^1",
     "next": "^15",
     "react": "^19",
     "react-dom": "^19"
@@ -21,6 +25,7 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10",
     "postcss": "^8",
+    "supabase": "^2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,6 +1,7 @@
 'use client';
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import ServiceButton from '../components/ServiceButton';
@@ -62,6 +63,7 @@ export default function Home() {
       id: 'repair',
       label: '정비 예약',
       href: '/reserve/repair',
+      recordsHref: '/records/repair',
       icon: <RepairIcon />,
       description: '차량 정비 및 점검 서비스',
       bgColor: 'from-blue-600 via-blue-700 to-blue-800',
@@ -71,6 +73,7 @@ export default function Home() {
       id: 'tuning',
       label: '튜닝 예약',
       href: '/reserve/tuning',
+      recordsHref: '/records/tuning',
       icon: <TuningIcon />,
       description: '차량 성능 튜닝 서비스',
       bgColor: 'from-purple-600 via-purple-700 to-purple-800',
@@ -80,6 +83,7 @@ export default function Home() {
       id: 'parking',
       label: '주차 예약',
       href: '/reserve/parking',
+      recordsHref: '/records/parking',
       icon: <ParkingIcon />,
       description: '카라반 및 제트스키&보트 보관',
       bgColor: 'from-green-600 via-green-700 to-green-800',
@@ -143,18 +147,49 @@ export default function Home() {
                 style={{ transitionDelay: service.delay }}
                 data-card-id={service.id}
               >
-                <ServiceButton
-                  id={service.id}
-                  label={service.label}
-                  href={service.href}
-                  icon={service.icon}
-                  description={service.description}
-                  bgColor={service.bgColor}
-                  isHovered={hoveredButton === service.id}
-                  onMouseEnter={() => setHoveredButton(service.id)}
-                  onMouseLeave={() => setHoveredButton(null)}
-                  centerCardId={centerCardId}
-                />
+                <div className="flex flex-col items-center gap-4">
+                  <ServiceButton
+                    id={service.id}
+                    label={service.label}
+                    href={service.href}
+                    icon={service.icon}
+                    description={service.description}
+                    bgColor={service.bgColor}
+                    isHovered={hoveredButton === service.id}
+                    onMouseEnter={() => setHoveredButton(service.id)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    centerCardId={centerCardId}
+                  />
+
+                  {/* 버튼 그룹 */}
+                  <div className="flex gap-3">
+                    {/* 작업 내역 버튼 */}
+                    <Link
+                      href={service.recordsHref}
+                      className="group relative cursor-pointer transition-all duration-300 hover:scale-105"
+                    >
+                      <div className="glass rounded-full px-6 py-3 border border-white/30 btn-hover backdrop-blur-sm">
+                        <span className="text-sm font-medium text-white">작업 내역</span>
+                        <svg className="w-4 h-4 ml-2 inline text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </Link>
+
+                    {/* 예약 조회 버튼 */}
+                    <Link
+                      href={`/reservations/${service.id}/search`}
+                      className="group relative cursor-pointer transition-all duration-300 hover:scale-105"
+                    >
+                      <div className="glass rounded-full px-6 py-3 border border-white/30 btn-hover backdrop-blur-sm">
+                        <span className="text-sm font-medium text-white">예약 조회</span>
+                        <svg className="w-4 h-4 ml-2 inline text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -162,6 +197,16 @@ export default function Home() {
 
         {/* Footer 컴포넌트 사용 */}
         <Footer />
+
+        {/* 관리자 링크 */}
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+          <Link
+            href="/admin"
+            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg transition-all duration-200 opacity-70 hover:opacity-100"
+          >
+            <span className="text-2xl">⚙️</span>
+          </Link>
+        </div>
       </div>
     </>
   );

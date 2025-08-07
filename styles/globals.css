@@ -56,28 +56,57 @@
     background: rgba(255, 255, 255, 0.5);
   }
 
+  /* date 입력 필드 캘린더 아이콘 스타일링 */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.5);
+    cursor: pointer;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+    background-color: transparent;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    filter: invert(1) brightness(2);
+  }
+
+  /* Firefox용 캘린더 아이콘 스타일링 */
+  input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(1) brightness(1.5);
+    cursor: pointer;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+
+  input[type="date"]::-moz-calendar-picker-indicator:hover {
+    opacity: 1;
+    filter: invert(1) brightness(2);
+  }
+
   /* datetime-local 입력 필드 캘린더 아이콘 스타일링 */
   input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
+    filter: invert(1) brightness(1.5);
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.9;
     transition: opacity 0.3s ease;
   }
 
   input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     opacity: 1;
+    filter: invert(1) brightness(2);
   }
 
   /* Firefox용 캘린더 아이콘 스타일링 */
   input[type="datetime-local"]::-moz-calendar-picker-indicator {
-    filter: invert(1);
+    filter: invert(1) brightness(1.5);
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.9;
     transition: opacity 0.3s ease;
   }
 
   input[type="datetime-local"]::-moz-calendar-picker-indicator:hover {
     opacity: 1;
+    filter: invert(1) brightness(2);
   }
 }
 
@@ -162,7 +191,7 @@
 
   /* 네온 효과 */
   .neon-glow {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
   }
 
   /* 네온 글로우 색상별 클래스 */
@@ -192,7 +221,7 @@
 
   /* 버튼 호버 효과 */
   .btn-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
   }
 
   .btn-hover:hover {
@@ -243,5 +272,58 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* Custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .scrollbar-thumb-white\/20 {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+
+  .scrollbar-track-transparent {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+}
+
+/* Animation classes */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .glass-dark {
+    margin: 1rem;
+    padding: 1.5rem;
   }
 }
